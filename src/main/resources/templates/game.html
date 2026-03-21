@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Connect Four AI</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f6f8;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .board {
+            display: inline-block;
+            background: #1976d2;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        table {
+            border-spacing: 10px;
+        }
+
+        td {
+            width: 70px;
+            height: 70px;
+            background: #90caf9;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        td:hover {
+            transform: translateY(-5px);
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: auto;
+            margin-top: 10px;
+            background: white;
+        }
+
+        .human {
+            background: red;
+        }
+
+        .ai {
+            background: yellow;
+        }
+
+        .column-hover {
+            background: rgba(255,255,255,0.2);
+            position: absolute;
+            top: -80px;
+            left: 0;
+            right: 0;
+            height: 80px;
+        }
+
+        .info {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .reset-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background: #1976d2;
+            color: white;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover {
+            background: #125ea8;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Connect Four</h1>
+
+<div th:if="${winner != null}">
+    <h2 th:text="${winner.name()} + ' gewinnt!'"></h2>
+</div>
+<div th:if="${winner == null && boardFull}">
+    <h2>Unentschieden!</h2>
+</div>
+
+<div class="info">
+    Spieler ist: <b th:text="${currentPlayer}"></b>
+</div>
+
+<div class="board">
+    <table>
+        <tr th:each="row : ${board.grid}">
+            <td th:each="cell, colStat : ${row}"
+                th:onclick="${!gameOver} ? 'window.location.href=\'/move?col=' + ${colStat.index} + '\'' : null">
+                <div class="cell"
+                     th:classappend="${cell != null} ? ${cell.name().toLowerCase()} : ''">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<form action="/reset" method="get">
+    <button class="reset-btn">Neues Spiel</button>
+</form>
+
+</body>
+</html>
