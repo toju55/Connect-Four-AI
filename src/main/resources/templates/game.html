@@ -98,7 +98,7 @@
     <h2>Unentschieden!</h2>
 </div>
 
-<div class="info">
+<div th:if="${!gameOver}" class="info">
     Spieler ist: <b th:text="${currentPlayer}"></b>
 </div>
 
