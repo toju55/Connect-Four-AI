@@ -93,38 +93,30 @@ public class NeuralNetAI implements AIPlayer {
      * @param player the player who made the move
      * @param result 1 win, 0.5 draw, 0 loss
      */
+    /**
+     * Train the network a bit after a game.
+     * Simple reward-based reinforcement: only reinforce moves that led to a win.
+     * @param board last board state
+     * @param move the move made
+     * @param player the player who made the move
+     * @param result 1 win, 0.5 draw, 0 loss
+     */
     public void train(int[] board, int move, Player player, double result) {
         double[] hidden = new double[hiddenSize];
 
-        // Forward pass
+        // Forward pass: input -> hidden
         for (int j = 0; j < hiddenSize; j++) {
             double sum = 0;
-            for (int i = 0; i < inputSize; i++) sum += board[i] * weightsInputHidden[i][j];
+            for (int i = 0; i < inputSize; i++) {
+                sum += board[i] * weightsInputHidden[i][j];
+            }
             hidden[j] = Math.tanh(sum);
         }
 
-        // Output
-        double[] output = new double[outputSize];
-        for (int j = 0; j < outputSize; j++) {
-            double sum = 0;
-            for (int i = 0; i < hiddenSize; i++) sum += hidden[i] * weightsHiddenOutput[i][j];
-            output[j] = sum;
-        }
-
-        // Simple weight update for the move that was chosen
-        double error = result - output[move];
-        // Hidden → Output
+        // Output -> only used for move selection, not for weight update here
+        // Reinforce the chosen move using reward
         for (int i = 0; i < hiddenSize; i++) {
-            weightsHiddenOutput[i][move] += learningRate * error * hidden[i];
-        }
-        // Input → Hidden
-        for (int i = 0; i < hiddenSize; i++) {
-            double derivative = 1 - hidden[i] * hidden[i];
-            double hiddenError = error * weightsHiddenOutput[i][move] * derivative;
-
-            for (int j = 0; j < inputSize; j++) {
-                weightsInputHidden[j][i] += learningRate * hiddenError * board[j];
-            }
+            weightsHiddenOutput[i][move] += learningRate * result * hidden[i];
         }
 
         // Persist weights after training

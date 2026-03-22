@@ -8,6 +8,7 @@ import de.toju.connectfourai.ai.MCTSAI;
 import de.toju.connectfourai.ai.MinimaxAI;
 import de.toju.connectfourai.ai.MinimaxHeuristicAI;
 import de.toju.connectfourai.ai.MonteCarloAI;
+import de.toju.connectfourai.ai.NeuralNet2LayerAI;
 import de.toju.connectfourai.ai.NeuralNetAI;
 import de.toju.connectfourai.ai.RandomAI;
 import de.toju.connectfourai.ai.WeightedHeuristicAI;
@@ -58,11 +59,8 @@ public class SimulationService {
                 board.makeMove(move, current);
 
                 // Remember move for training if NeuralNetAI
-                if (((current == Player.PLAYER1) && (ai1Type == PlayerType.NEURAL_NET_AI)) || ((current == Player.PLAYER2) && (ai2Type == PlayerType.NEURAL_NET_AI))) {
-                    BoardState state = new BoardState(board.toFlatArray(current), current, move);
-                    if (current == Player.PLAYER1) p1Moves.add(state);
-                    else p2Moves.add(state);
-                }
+                rememberMove(current, ai1Type, move, p1Moves, p2Moves, board);
+                rememberMove(current, ai2Type, move, p1Moves, p2Moves, board);
 
                 current = current.opposite();
             }
@@ -73,8 +71,18 @@ public class SimulationService {
             else results.put("Draws", results.get("Draws") + 1);
 
             // Train NeuralNetAIs after the game
-            if (ai1Type == PlayerType.NEURAL_NET_AI) trainNeuralNet(p1Moves, winner, Player.PLAYER1);
-            if (ai2Type == PlayerType.NEURAL_NET_AI) trainNeuralNet(p2Moves, winner, Player.PLAYER2);
+            if (ai1Type == PlayerType.NEURAL_NET_AI) {
+                trainNeuralNetGeneric(p1Moves, winner, Player.PLAYER1, aiMap.get(PlayerType.NEURAL_NET_AI));
+            }
+            if (ai2Type == PlayerType.NEURAL_NET_AI) {
+                trainNeuralNetGeneric(p2Moves, winner, Player.PLAYER2, aiMap.get(PlayerType.NEURAL_NET_AI));
+            }
+            if (ai1Type == PlayerType.NEURAL_NET_2_LAYERS_AI) {
+                trainNeuralNetGeneric(p1Moves, winner, Player.PLAYER1, aiMap.get(PlayerType.NEURAL_NET_2_LAYERS_AI));
+            }
+            if (ai2Type == PlayerType.NEURAL_NET_2_LAYERS_AI) {
+                trainNeuralNetGeneric(p2Moves, winner, Player.PLAYER2, aiMap.get(PlayerType.NEURAL_NET_2_LAYERS_AI));
+            }
         }
 
         return results;
@@ -103,15 +111,6 @@ public class SimulationService {
             do {
                 p2 = ais.get(random.nextInt(ais.size()));
             } while (p2 == p1);
-
-            // If neither is NeuralNetAI, replace one randomly with NeuralNetAI
-            if (p1 != PlayerType.NEURAL_NET_AI && p2 != PlayerType.NEURAL_NET_AI) {
-                if (random.nextBoolean()) {
-                    p1 = PlayerType.NEURAL_NET_AI;
-                } else {
-                    p2 = PlayerType.NEURAL_NET_AI;
-                }
-            }
 
             Map<String, Integer> result = simulateGames(p1, p2, 1); // 1 game per random match
 
@@ -175,6 +174,7 @@ public class SimulationService {
                 case MINIMAX_AI -> aiMap.put(ai, new MinimaxAI());
                 case MINIMAX_HEURISTIC_AI -> aiMap.put(ai, new MinimaxHeuristicAI());
                 case MONTE_CARLO_AI -> aiMap.put(ai, new MonteCarloAI());
+                case NEURAL_NET_2_LAYERS_AI -> aiMap.put(ai, new NeuralNet2LayerAI());
                 case NEURAL_NET_AI -> aiMap.put(ai, new NeuralNetAI());
                 case RANDOM_AI -> aiMap.put(ai, new RandomAI());
                 case WEIGHTED_HEURISTIC_AI -> aiMap.put(ai, new WeightedHeuristicAI());
@@ -201,18 +201,44 @@ public class SimulationService {
         return matchStats;
     }
 
-    private void trainNeuralNet(List<BoardState> moves, Player winner, Player player) {
-        // Simple training: for each move, give reward = 1 if player won, 0.5 if draw, 0 if lost
+    private void trainNeuralNetGeneric(List<BoardState> moves, Player winner, Player player, AIPlayer ai) {
+        // Determine reward: 1 for win, 0.5 for draw, 0 for loss
         double reward;
         if (winner == player) reward = 1.0;
         else if (winner == null) reward = 0.5;
         else reward = 0.0;
 
-        NeuralNetAI ai = (NeuralNetAI) aiMap.get(PlayerType.NEURAL_NET_AI);
         for (BoardState state : moves) {
-            if (state.player == player) {
-                ai.train(state.flatBoard, state.lastMove, state.player, reward);
+            // Only train on moves made by the current player
+            if (state.player != player) continue;
+
+            int move = state.lastMove;
+            if (move < 0 || move >= 7) {
+                // Invalid move, skip training and print debug
+                System.err.println("Skipping training for invalid move: " + move + ", player: " + player + ", AIPlayer: " + ai);
+                continue;
             }
+
+            // Debug output
+            System.out.println("Training player " + player + " on move " + move + " with reward " + reward);
+
+            // Call the AI-specific train method
+            if (ai instanceof NeuralNetAI nnet) {
+                nnet.train(state.flatBoard, move, state.player, reward);
+            } else if (ai instanceof NeuralNet2LayerAI nnet2) {
+                nnet2.train(state.flatBoard, move, state.player, reward);
+            } else {
+                System.err.println("Unknown AI type for training: " + ai.getClass());
+            }
+        }
+    }
+
+    private void rememberMove(Player current, PlayerType aiType, int move, List<BoardState> p1Moves, List<BoardState> p2Moves, Board board) {
+        // Only remember moves for neural nets
+        if (aiType == PlayerType.NEURAL_NET_AI || aiType == PlayerType.NEURAL_NET_2_LAYERS_AI) {
+            BoardState state = new BoardState(board.toFlatArray(current), current, move);
+            if (current == Player.PLAYER1) p1Moves.add(state);
+            else p2Moves.add(state);
         }
     }
 

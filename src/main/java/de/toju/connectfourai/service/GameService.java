@@ -8,6 +8,7 @@ import de.toju.connectfourai.ai.MCTSAI;
 import de.toju.connectfourai.ai.MinimaxAI;
 import de.toju.connectfourai.ai.MinimaxHeuristicAI;
 import de.toju.connectfourai.ai.MonteCarloAI;
+import de.toju.connectfourai.ai.NeuralNet2LayerAI;
 import de.toju.connectfourai.ai.NeuralNetAI;
 import de.toju.connectfourai.ai.RandomAI;
 import de.toju.connectfourai.ai.WeightedHeuristicAI;
@@ -34,13 +35,15 @@ public class GameService {
     private final AIPlayer minimaxAI;
     private final AIPlayer minimaxHeuristicAI;
     private final AIPlayer monteCarloAI;
+    private final AIPlayer neuralNet2LayerAI;
     private final AIPlayer neuralNetAI;
     private final AIPlayer randomAI;
     private final AIPlayer weightedHeuristicAI;
 
     public GameService(AlphaBetaAI alphaBetaAi, HeuristicAI heuristicAI, HybridAI hybridAi, MCTSAI mctsAI,
             MinimaxAI minimaxAI, MinimaxHeuristicAI minimaxHeuristicAI, MonteCarloAI monteCarloAI,
-            NeuralNetAI neuralNetAI, RandomAI randomAI, WeightedHeuristicAI weightedHeuristicAI) {
+            NeuralNet2LayerAI neuralNet2LayerAI, NeuralNetAI neuralNetAI, RandomAI randomAI,
+            WeightedHeuristicAI weightedHeuristicAI) {
         this.alphaBetaAi = alphaBetaAi;
         this.heuristicAI = heuristicAI;
         this.hybridAi = hybridAi;
@@ -48,6 +51,7 @@ public class GameService {
         this.minimaxAI = minimaxAI;
         this.minimaxHeuristicAI = minimaxHeuristicAI;
         this.monteCarloAI = monteCarloAI;
+        this.neuralNet2LayerAI = neuralNet2LayerAI;
         this.neuralNetAI = neuralNetAI;
         this.randomAI = randomAI;
         this.weightedHeuristicAI = weightedHeuristicAI;
