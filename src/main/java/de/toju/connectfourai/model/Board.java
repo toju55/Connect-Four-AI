@@ -34,6 +34,10 @@ public class Board {
         return COLS;
     }
 
+    public int getRows() {
+        return ROWS;
+    }
+
     public Player checkWinner() {
         int rows = grid.length;
         int cols = grid[0].length;
@@ -101,5 +105,19 @@ public class Board {
             }
         }
         return true;
+    }
+
+    public boolean isColumnFull(int col) {
+        // Check if the top cell of the column is occupied
+        return grid[0][col] != null;
+    }
+
+    public Board copy() {
+        // Create a deep copy of the board to simulate moves
+        Board copy = new Board();
+        for (int r = 0; r < getRows(); r++) {
+            System.arraycopy(this.grid[r], 0, copy.grid[r], 0, getCols());
+        }
+        return copy;
     }
 }

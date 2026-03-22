@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Select Players</title>
+</head>
+<body>
+
+<h1>Select Players</h1>
+
+<form th:action="@{/start}" method="post">
+
+    <label>Player 1:
+        <select name="player1">
+            <option th:each="type : ${playerTypes}"
+                    th:value="${type}"
+                    th:text="${type}">
+            </option>
+        </select>
+    </label>
+
+    <br/><br/>
+
+    <label>Player 2:
+        <select name="player2">
+            <option th:each="type : ${playerTypes}"
+                    th:value="${type}"
+                    th:text="${type}">
+            </option>
+        </select>
+    </label>
+
+    <br/><br/>
+
+    <button type="submit">Start Game</button>
+
+</form>
+
+</body>
+</html>

@@ -49,11 +49,11 @@
             background: white;
         }
 
-        .human {
+        .player1 {
             background: red;
         }
 
-        .ai {
+        .player2 {
             background: yellow;
         }
 
@@ -71,7 +71,7 @@
             font-size: 18px;
         }
 
-        .reset-btn {
+        .btn {
             margin-top: 20px;
             padding: 10px 20px;
             border: none;
@@ -81,7 +81,7 @@
             cursor: pointer;
         }
 
-        .reset-btn:hover {
+        .btn:hover {
             background: #125ea8;
         }
     </style>
@@ -91,22 +91,32 @@
 
 <h1>Connect Four</h1>
 
+<!-- Current player -->
+<div th:if="${winner == null && !boardFull}">
+    <h3>
+        Current Player:
+        <span th:text="${currentPlayer + ' (' + currentPlayerType + ')'}"></span>
+    </h3>
+</div>
+
+<!-- Winner / Draw -->
 <div th:if="${winner != null}">
-    <h2 th:text="${winner.name()} + ' gewinnt!'"></h2>
+    <h2 th:text="${winner.name()} + ' (' + currentPlayerType + ')' + ' wins!'"></h2>
 </div>
+
 <div th:if="${winner == null && boardFull}">
-    <h2>Unentschieden!</h2>
+    <h2>Draw!</h2>
 </div>
 
-<div th:if="${!gameOver}" class="info">
-    Spieler ist: <b th:text="${currentPlayer}"></b>
-</div>
-
-<div class="board">
+<!-- Board -->
+<div class="board" th:classappend="${gameOver} ? 'disabled' : ''">
     <table>
         <tr th:each="row : ${board.grid}">
             <td th:each="cell, colStat : ${row}"
-                th:onclick="${!gameOver} ? 'window.location.href=\'/move?col=' + ${colStat.index} + '\'' : null">
+                th:onclick="${currentPlayerType.name() == 'HUMAN' && !gameOver}
+                    ? 'window.location.href=\'/move?col=' + ${colStat.index} + '\''
+                    : null">
+
                 <div class="cell"
                      th:classappend="${cell != null} ? ${cell.name().toLowerCase()} : ''">
                 </div>
@@ -114,8 +124,18 @@
         </tr>
     </table>
 </div>
-<form action="/reset" method="get">
-    <button class="reset-btn">Neues Spiel</button>
+
+<br/>
+
+<!-- AI Move Button -->
+<form th:if="${!gameOver and currentPlayerType.name() != 'HUMAN'}"
+      th:action="@{/nextMove}" method="get">
+    <button type="submit" class="btn">Next Move</button>
+</form>
+
+<!-- Reset -->
+<form th:action="@{/reset}" method="get">
+    <button type="submit" class="btn">Reset</button>
 </form>
 
 </body>

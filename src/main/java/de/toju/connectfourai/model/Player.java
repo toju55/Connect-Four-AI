@@ -1,10 +1,10 @@
 package de.toju.connectfourai.model;
 
 public enum Player {
-    HUMAN,
-    AI;
+    PLAYER1,
+    PLAYER2;
 
     public Player opposite() {
-        return this == HUMAN ? AI : HUMAN;
+        return this == PLAYER1 ? PLAYER2 : PLAYER1;
     }
 }
