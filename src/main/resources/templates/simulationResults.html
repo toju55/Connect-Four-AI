@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Simulation Results</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1>Simulation Results</h1>
+
+<p th:text="'Games played: ' + ${numGames}"></p>
+<p th:text="'AI1 (' + ${ai1} + ') wins: ' + ${results['AI1Wins']}"></p>
+<p th:text="'AI2 (' + ${ai2} + ') wins: ' + ${results['AI2Wins']}"></p>
+<p th:text="'Draws: ' + ${results['Draws']}"></p>
+
+<a th:href="@{/simulate}">Back</a>
+</body>
+</html>

@@ -1,26 +1,28 @@
 package de.toju.connectfourai.controller;
 
-import de.toju.connectfourai.ai.AIPlayer;
-import de.toju.connectfourai.ai.HeuristicAI;
-import de.toju.connectfourai.model.Player;
 import de.toju.connectfourai.model.PlayerType;
 import de.toju.connectfourai.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class ViewController {
+public class GameController {
 
     private final GameService gameService;
-    private final AIPlayer aiPlayer = new HeuristicAI();
 
     @GetMapping("/")
+    public String index(Model model) {
+        return "index";
+    }
+
+    @GetMapping("/selectPlayers")
     public String selectPlayers(Model model) {
         model.addAttribute("playerTypes", PlayerType.values());
         return "selectPlayers";
@@ -38,6 +40,7 @@ public class ViewController {
         model.addAttribute("currentPlayer", gameService.getCurrentPlayer());
         model.addAttribute("currentPlayerType", gameService.getCurrentPlayerType());
         model.addAttribute("winner", gameService.getWinner());
+        model.addAttribute("winnerType",  gameService.getWinnerType());
         model.addAttribute("boardFull", gameService.getBoard().isFull());
         model.addAttribute("gameOver", gameService.isGameOver());
         return "game";

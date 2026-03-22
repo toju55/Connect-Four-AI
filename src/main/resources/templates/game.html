@@ -2,89 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Connect Four AI</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f4f6f8;
-        }
-
-        h1 {
-            margin-top: 20px;
-        }
-
-        .board {
-            display: inline-block;
-            background: #1976d2;
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        table {
-            border-spacing: 10px;
-        }
-
-        td {
-            width: 70px;
-            height: 70px;
-            background: #90caf9;
-            border-radius: 10px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-
-        td:hover {
-            transform: translateY(-5px);
-        }
-
-        .cell {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin: auto;
-            margin-top: 10px;
-            background: white;
-        }
-
-        .player1 {
-            background: red;
-        }
-
-        .player2 {
-            background: yellow;
-        }
-
-        .column-hover {
-            background: rgba(255,255,255,0.2);
-            position: absolute;
-            top: -80px;
-            left: 0;
-            right: 0;
-            height: 80px;
-        }
-
-        .info {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-
-        .btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            background: #1976d2;
-            color: white;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background: #125ea8;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 
 <body>
@@ -101,7 +19,7 @@
 
 <!-- Winner / Draw -->
 <div th:if="${winner != null}">
-    <h2 th:text="${winner.name()} + ' (' + currentPlayerType + ')' + ' wins!'"></h2>
+    <h2 th:text="${winner.name() + ' (' + winnerType + ')' + ' wins!'}"></h2>
 </div>
 
 <div th:if="${winner == null && boardFull}">
@@ -130,12 +48,12 @@
 <!-- AI Move Button -->
 <form th:if="${!gameOver and currentPlayerType.name() != 'HUMAN'}"
       th:action="@{/nextMove}" method="get">
-    <button type="submit" class="btn">Next Move</button>
+    <button type="submit">Next Move</button>
 </form>
 
 <!-- Reset -->
 <form th:action="@{/reset}" method="get">
-    <button type="submit" class="btn">Reset</button>
+    <button type="submit">Reset</button>
 </form>
 
 </body>

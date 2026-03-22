@@ -120,4 +120,25 @@ public class Board {
         }
         return copy;
     }
+
+    public void printBoard() {
+        System.out.println();
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                if (grid[r][c] == null) {
+                    System.out.print(". ");
+                } else if (grid[r][c] == Player.PLAYER1) {
+                    System.out.print("X ");
+                } else if (grid[r][c] == Player.PLAYER2) {
+                    System.out.print("O ");
+                }
+            }
+            System.out.println();
+        }
+        // optional: Spaltennummern
+        for (int c = 0; c < COLS; c++) {
+            System.out.print(c + " ");
+        }
+        System.out.println("\n");
+    }
 }

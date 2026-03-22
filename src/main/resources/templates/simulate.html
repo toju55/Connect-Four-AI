@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Connect Four Simulation</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1>Simulate AI Games</h1>
+
+<form th:action="@{/simulate}" method="post">
+    <label>
+        AI Player 1:
+        <select name="ai1">
+            <option th:each="type : ${aiPlayerTypes}" th:value="${type}" th:text="${type}"></option>
+        </select>
+    </label>
+    <br/>
+
+    <label>
+        AI Player 2:
+        <select name="ai2">
+            <option th:each="type : ${aiPlayerTypes}" th:value="${type}" th:text="${type}"></option>
+        </select>
+        <br/>
+    </label>
+
+    <label>
+        Number of games:
+        <input type="number" name="numGames" value="100"/>
+    </label>
+    <br/>
+    <button type="submit">Run Simulation</button>
+</form>
+</body>
+</html>

@@ -2,6 +2,8 @@ package de.toju.connectfourai.service;
 
 import de.toju.connectfourai.ai.AIPlayer;
 import de.toju.connectfourai.ai.HeuristicAI;
+import de.toju.connectfourai.ai.MinimaxAI;
+import de.toju.connectfourai.ai.MinimaxHeuristicAI;
 import de.toju.connectfourai.ai.RandomAI;
 import de.toju.connectfourai.model.Board;
 import de.toju.connectfourai.model.Player;
@@ -21,10 +23,14 @@ public class GameService {
 
     private final AIPlayer randomAI;
     private final AIPlayer heuristicAI;
+    private final AIPlayer minimaxAI;
+    private final AIPlayer minimaxHeuristicAI;
 
-    public GameService(RandomAI randomAI, HeuristicAI heuristicAI) {
+    public GameService(RandomAI randomAI, HeuristicAI heuristicAI, MinimaxAI minimaxAI, MinimaxHeuristicAI minimaxHeuristicAI) {
         this.randomAI = randomAI;
         this.heuristicAI = heuristicAI;
+        this.minimaxAI = minimaxAI;
+        this.minimaxHeuristicAI = minimaxHeuristicAI;
         reset();
     }
 
@@ -38,6 +44,8 @@ public class GameService {
         AIPlayer ai = switch (type) {
             case RANDOM_AI -> randomAI;
             case HEURISTIC_AI -> heuristicAI;
+            case MINIMAX_AI ->  minimaxAI;
+            case MINIMAX_HEURISTIC_AI -> minimaxHeuristicAI;
             default -> null;
         };
 
@@ -76,6 +84,15 @@ public class GameService {
 
     public Player getWinner() {
         return board.checkWinner();
+    }
+
+    public PlayerType getWinnerType() {
+        Player winner = getWinner();
+
+        return winner == null ? null : switch (winner) {
+            case PLAYER1 -> player1Type;
+            case PLAYER2 -> player2Type;
+        };
     }
 
     public boolean isGameOver() {

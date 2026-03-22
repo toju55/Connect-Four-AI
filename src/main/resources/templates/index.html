@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Connect Four AI</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+<h1>Connect Four AI</h1>
+
+<!-- Start single game -->
+<h2>Start a Single Game</h2>
+<form th:action="@{/selectPlayers}" method="get">
+    <button type="submit">Start Game</button>
+</form>
+
+<!-- Simulate games between chosen AIs -->
+<h2>Simulate Games Between AIs</h2>
+<form th:action="@{/simulate}" method="get">
+    <button type="submit">Simulate</button>
+</form>
+
+<!-- Random ELO Tournament -->
+<h2>Random AI ELO Tournament</h2>
+<form th:action="@{/simulateElo}" method="get">
+    <label for="numMatches">Number of random matches:</label>
+    <input type="number" id="numMatches" name="numMatches" value="100" min="1" />
+    <button type="submit">Run Tournament</button>
+</form>
+
+</body>
+</html>
