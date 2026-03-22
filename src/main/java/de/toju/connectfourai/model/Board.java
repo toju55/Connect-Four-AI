@@ -38,18 +38,99 @@ public class Board {
         return ROWS;
     }
 
+    /** Count rows of exactly 'length' for the given player */
+    public int countRowsOf(Player player, int length) {
+        int count = 0;
+
+        // horizontal
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c <= COLS - length; c++) {
+                boolean match = true;
+                for (int i = 0; i < length; i++) {
+                    if (grid[r][c + i] != player) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) count++;
+            }
+        }
+
+        // vertical
+        for (int c = 0; c < COLS; c++) {
+            for (int r = 0; r <= ROWS - length; r++) {
+                boolean match = true;
+                for (int i = 0; i < length; i++) {
+                    if (grid[r + i][c] != player) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) count++;
+            }
+        }
+
+        // diagonal /
+        for (int r = 0; r <= ROWS - length; r++) {
+            for (int c = 0; c <= COLS - length; c++) {
+                boolean match = true;
+                for (int i = 0; i < length; i++) {
+                    if (grid[r + i][c + i] != player) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) count++;
+            }
+        }
+
+        // diagonal \
+        for (int r = length - 1; r < ROWS; r++) {
+            for (int c = 0; c <= COLS - length; c++) {
+                boolean match = true;
+                for (int i = 0; i < length; i++) {
+                    if (grid[r - i][c + i] != player) {
+                        match = false;
+                        break;
+                    }
+                }
+                if (match) count++;
+            }
+        }
+
+        return count;
+    }
+
+    /** Count potential winning lines for player */
+    public int countPotentialWins(Player player) {
+        // Very simple: count rows of length 3 with one empty cell to make 4
+        int count = 0;
+        count += countRowsOf(player, 3); // could refine to only "open-ended" sequences
+        return count;
+    }
+
+    /** Count how many discs are in the center column (for center control) */
+    public int countCenterControl(Player player) {
+        int centerCol = COLS / 2;
+        int count = 0;
+        for (int r = 0; r < ROWS; r++) {
+            if (grid[r][centerCol] == player) count++;
+        }
+        return count;
+    }
+
     public Player checkWinner() {
         int rows = grid.length;
         int cols = grid[0].length;
 
         // Horizontal
-        for (int r = 0; r < rows; r++) {
+        for (Player[] players : grid) {
             for (int c = 0; c <= cols - 4; c++) {
-                Player p = grid[r][c];
+                Player p = players[c];
                 if (p != null &&
-                        p == grid[r][c+1] &&
-                        p == grid[r][c+2] &&
-                        p == grid[r][c+3]) {
+                        p == players[c + 1] &&
+                        p == players[c + 2] &&
+                        p == players[c + 3]) {
                     return p;
                 }
             }
@@ -119,6 +200,21 @@ public class Board {
             System.arraycopy(this.grid[r], 0, copy.grid[r], 0, getCols());
         }
         return copy;
+    }
+
+    public int[] toFlatArray(Player perspective) {
+        int[] flat = new int[ROWS * COLS];
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                Player cell = grid[r][c];
+                int val = 0;
+                if (cell != null) {
+                    val = cell == perspective ? 1 : -1;
+                }
+                flat[r * COLS + c] = val;
+            }
+        }
+        return flat;
     }
 
     public void printBoard() {

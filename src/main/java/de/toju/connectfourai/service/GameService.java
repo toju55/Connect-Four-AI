@@ -1,10 +1,16 @@
 package de.toju.connectfourai.service;
 
 import de.toju.connectfourai.ai.AIPlayer;
+import de.toju.connectfourai.ai.AlphaBetaAI;
 import de.toju.connectfourai.ai.HeuristicAI;
+import de.toju.connectfourai.ai.HybridAI;
+import de.toju.connectfourai.ai.MCTSAI;
 import de.toju.connectfourai.ai.MinimaxAI;
 import de.toju.connectfourai.ai.MinimaxHeuristicAI;
+import de.toju.connectfourai.ai.MonteCarloAI;
+import de.toju.connectfourai.ai.NeuralNetAI;
 import de.toju.connectfourai.ai.RandomAI;
+import de.toju.connectfourai.ai.WeightedHeuristicAI;
 import de.toju.connectfourai.model.Board;
 import de.toju.connectfourai.model.Player;
 import de.toju.connectfourai.model.PlayerType;
@@ -21,16 +27,30 @@ public class GameService {
     private PlayerType player1Type;
     private PlayerType player2Type;
 
-    private final AIPlayer randomAI;
+    private final AIPlayer alphaBetaAi;
     private final AIPlayer heuristicAI;
+    private final AIPlayer hybridAi;
+    private final AIPlayer mctsAI;
     private final AIPlayer minimaxAI;
     private final AIPlayer minimaxHeuristicAI;
+    private final AIPlayer monteCarloAI;
+    private final AIPlayer neuralNetAI;
+    private final AIPlayer randomAI;
+    private final AIPlayer weightedHeuristicAI;
 
-    public GameService(RandomAI randomAI, HeuristicAI heuristicAI, MinimaxAI minimaxAI, MinimaxHeuristicAI minimaxHeuristicAI) {
-        this.randomAI = randomAI;
+    public GameService(AlphaBetaAI alphaBetaAi, HeuristicAI heuristicAI, HybridAI hybridAi, MCTSAI mctsAI,
+            MinimaxAI minimaxAI, MinimaxHeuristicAI minimaxHeuristicAI, MonteCarloAI monteCarloAI,
+            NeuralNetAI neuralNetAI, RandomAI randomAI, WeightedHeuristicAI weightedHeuristicAI) {
+        this.alphaBetaAi = alphaBetaAi;
         this.heuristicAI = heuristicAI;
+        this.hybridAi = hybridAi;
+        this.mctsAI = mctsAI;
         this.minimaxAI = minimaxAI;
         this.minimaxHeuristicAI = minimaxHeuristicAI;
+        this.monteCarloAI = monteCarloAI;
+        this.neuralNetAI = neuralNetAI;
+        this.randomAI = randomAI;
+        this.weightedHeuristicAI = weightedHeuristicAI;
         reset();
     }
 
@@ -42,10 +62,16 @@ public class GameService {
         if (type == PlayerType.HUMAN) return;
 
         AIPlayer ai = switch (type) {
-            case RANDOM_AI -> randomAI;
+            case ALPHA_BETA_AI -> alphaBetaAi;
             case HEURISTIC_AI -> heuristicAI;
-            case MINIMAX_AI ->  minimaxAI;
-            case MINIMAX_HEURISTIC_AI -> minimaxHeuristicAI;
+            case HYBRID_AI -> hybridAi;
+            case MCTS_AI -> mctsAI;
+            case MINIMAX_AI -> minimaxAI;
+            case MINIMAX_HEURISTIC_AI ->  minimaxHeuristicAI;
+            case MONTE_CARLO_AI -> monteCarloAI;
+            case NEURAL_NET_AI -> neuralNetAI;
+            case RANDOM_AI -> randomAI;
+            case WEIGHTED_HEURISTIC_AI -> weightedHeuristicAI;
             default -> null;
         };
 

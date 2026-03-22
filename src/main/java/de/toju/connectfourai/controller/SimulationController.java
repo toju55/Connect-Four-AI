@@ -1,7 +1,7 @@
 package de.toju.connectfourai.controller;
 
-import de.toju.connectfourai.ai.AIPlayer;
 import de.toju.connectfourai.model.PlayerType;
+import de.toju.connectfourai.model.SimulationResult;
 import de.toju.connectfourai.service.SimulationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -41,7 +40,8 @@ public class SimulationController {
 
     @GetMapping("/simulateElo")
     public String simulateElo(@RequestParam(defaultValue = "100") int numMatches, Model model) {
-        List<SimulationService.AIRanking> rankings = simulationService.simulateRandomMatches(numMatches);
-        model.addAttribute("rankings", rankings);
+        SimulationResult simulationResult = simulationService.simulateRandomMatches(numMatches);
+        model.addAttribute("simulationResult", simulationResult);
+        model.addAttribute("ais", Arrays.stream(PlayerType.values()).filter(pt -> !pt.isHuman()).map(Enum::name).toList());
         return "eloRanking";
     }}

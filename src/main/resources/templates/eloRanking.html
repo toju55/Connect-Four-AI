@@ -16,13 +16,32 @@
         <th>Losses</th>
         <th>Draws</th>
     </tr>
-    <tr th:each="r, stat : ${rankings}">
+    <tr th:each="r, stat : ${simulationResult.rankings}">
         <td th:text="${stat.index + 1}"></td>
         <td th:text="${r.ai}"></td>
         <td th:text="${r.elo}"></td>
         <td th:text="${r.wins}"></td>
         <td th:text="${r.losses}"></td>
         <td th:text="${r.draws}"></td>
+    </tr>
+</table>
+
+<!-- Match Stats Cross Table -->
+<h2>Match Results</h2>
+<table class="simulation-table">
+    <tr>
+        <th>AI vs AI</th>
+        <th th:each="colAI : ${ais}" th:text="${colAI}"></th>
+    </tr>
+    <tr th:each="rowAI : ${ais}">
+        <td th:text="${rowAI}"></td>
+        <td th:each="colAI : ${ais}">
+            <span th:text="${rowAI == colAI ? '-' :
+                           simulationResult.matchStats.get(rowAI).get(colAI).getWins() + '-' +
+                           simulationResult.matchStats.get(rowAI).get(colAI).getLosses() + '-' +
+                           simulationResult.matchStats.get(rowAI).get(colAI).getDraws()}">
+            </span>
+        </td>
     </tr>
 </table>
 
