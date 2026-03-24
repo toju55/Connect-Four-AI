@@ -1,6 +1,7 @@
 package de.toju.connectfourai.controller;
 
 import de.toju.connectfourai.model.Board;
+import de.toju.connectfourai.model.PlayerType;
 import de.toju.connectfourai.persistence.GameEntity;
 import de.toju.connectfourai.persistence.GameEntityRepository;
 import org.springframework.data.domain.Page;
@@ -27,15 +28,28 @@ public class ReplayController {
     }
 
     @GetMapping
-    public String listReplays(Model model, @RequestParam(defaultValue = "0") int page,
+    public String listReplays(
+            Model model,
+            @RequestParam(required = false) PlayerType ai1,
+            @RequestParam(required = false) PlayerType ai2,
+            @RequestParam(required = false) PlayerType winnerAi,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
 
-        Page<GameEntity> gameEntityPage = gameEntityRepository.findAll(PageRequest.of(page, size));
+        Page<GameEntity> gamePage = gameEntityRepository.findFiltered(
+                ai1, ai2, winnerAi, PageRequest.of(page, size)
+        );
 
-        model.addAttribute("games", gameEntityPage.getContent());
+        model.addAttribute("games", gamePage.getContent());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", gameEntityPage.getTotalPages());
+        model.addAttribute("totalPages", gamePage.getTotalPages());
         model.addAttribute("pageSize", size);
+
+        model.addAttribute("playerTypes", PlayerType.values());
+
+        model.addAttribute("selectedAi1", ai1);
+        model.addAttribute("selectedAi2", ai2);
+        model.addAttribute("selectedWinnerAi", winnerAi);
 
         return "replayList";
     }

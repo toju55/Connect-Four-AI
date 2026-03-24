@@ -10,21 +10,86 @@
 
 <h1>Saved Replays</h1>
 
+<!-- Filtering -->
+<form method="get" th:action="@{/replay}" class="filter-form">
+
+    <label>AI 1:</label>
+    <select name="ai1">
+        <option value="">Any</option>
+        <option th:each="p : ${playerTypes}"
+                th:value="${p}"
+                th:selected="${p == selectedAi1}"
+                th:text="${p}">
+        </option>
+    </select>
+
+    <label>AI 2:</label>
+    <select name="ai2">
+        <option value="">Any</option>
+        <option th:each="p : ${playerTypes}"
+                th:value="${p}"
+                th:selected="${p == selectedAi2}"
+                th:text="${p}">
+        </option>
+    </select>
+
+    <label>Winner AI:</label>
+    <select name="winnerAi">
+        <option value="">All</option>
+        <option th:each="p : ${playerTypes}"
+                th:value="${p}"
+                th:selected="${p == selectedWinnerAi}"
+                th:text="${p}">
+        </option>
+    </select>
+
+    <button type="submit">Apply</button>
+</form>
+
 <!-- Paging Navigation -->
 <div class="paging">
-    <a th:if="${currentPage > 0}"
-       th:href="@{/replay(page=0, size=${pageSize})}">First</a>
 
     <a th:if="${currentPage > 0}"
-       th:href="@{/replay(page=${currentPage - 1}, size=${pageSize})}">Previous</a>
+       th:href="@{/replay(
+           page=0,
+           size=${pageSize},
+           ai1=${selectedAi1},
+           ai2=${selectedAi2},
+           winnerAi=${selectedWinnerAi}
+       )}">First</a>
 
-    <span>Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></span>
+    <a th:if="${currentPage > 0}"
+       th:href="@{/replay(
+           page=${currentPage - 1},
+           size=${pageSize},
+           ai1=${selectedAi1},
+           ai2=${selectedAi2},
+           winnerAi=${selectedWinnerAi}
+       )}">Previous</a>
+
+    <span>
+        Page <span th:text="${currentPage + 1}"></span>
+        of <span th:text="${totalPages}"></span>
+    </span>
 
     <a th:if="${currentPage + 1 < totalPages}"
-       th:href="@{/replay(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+       th:href="@{/replay(
+           page=${currentPage + 1},
+           size=${pageSize},
+           ai1=${selectedAi1},
+           ai2=${selectedAi2},
+           winnerAi=${selectedWinnerAi}
+       )}">Next</a>
 
     <a th:if="${currentPage + 1 < totalPages}"
-       th:href="@{/replay(page=${totalPages - 1}, size=${pageSize})}">Last</a>
+       th:href="@{/replay(
+           page=${totalPages - 1},
+           size=${pageSize},
+           ai1=${selectedAi1},
+           ai2=${selectedAi2},
+           winnerAi=${selectedWinnerAi}
+       )}">Last</a>
+
 </div>
 
 <table>
