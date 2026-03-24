@@ -46,7 +46,7 @@ public class SimulationService {
     @Getter
     private volatile SimulationResult lastSimulationResult;
 
-    private GameEntityRepository gameEntityRepository;
+    private final GameEntityRepository gameEntityRepository;
 
     // Register AI players by type
     public SimulationService(GameEntityRepository gameEntityRepository) {
@@ -189,7 +189,6 @@ public class SimulationService {
         Map<String, Map<String, MatchStats>> matchStats = initMatchStats();
 
         List<PlayerType> ais = new ArrayList<>(aiMap.keySet());
-        Random random = new Random();
 
         for (int i = 0; i < numRounds; i++) {
             for (PlayerType p1 : ais) {
@@ -291,11 +290,18 @@ public class SimulationService {
 
     private void updateElo(AIRanking r1, AIRanking r2, int s1, int s2) {
         double k = 32.0;
+
         double e1 = 1.0 / (1 + Math.pow(10, (r2.getElo() - r1.getElo()) / 400.0));
         double e2 = 1.0 / (1 + Math.pow(10, (r1.getElo() - r2.getElo()) / 400.0));
 
-        r1.setElo((int) Math.round(r1.getElo() + k * (s1 - e1)));
-        r2.setElo((int) Math.round(r2.getElo() + k * (s2 - e2)));
+        double newElo1 = r1.getElo() + k * (s1 - e1);
+        double newElo2 = r2.getElo() + k * (s2 - e2);
+
+        int roundedElo1 = (int) Math.floor(newElo1);
+        int roundedElo2 = (int) Math.ceil(newElo2);
+
+        r1.setElo(roundedElo1);
+        r2.setElo(roundedElo2);
     }
 
     private void initAiMap() {

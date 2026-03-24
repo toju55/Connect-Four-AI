@@ -41,13 +41,13 @@ public class SimulationController {
     }
 
     @GetMapping("/simulateRandom")
-    public String simulateRandom(@RequestParam(defaultValue = "100") int numMatches, Model model) {
+    public String simulateRandom(@RequestParam(defaultValue = "100") int numMatches) {
         simulationService.simulateRandomMatchesAsync(numMatches);
         return "redirect:/eloRanking";
     }
 
     @GetMapping("/simulateRoundRobin")
-    public String simulateRoundRobin(@RequestParam(defaultValue = "1") int numRounds, Model model) {
+    public String simulateRoundRobin(@RequestParam(defaultValue = "1") int numRounds) {
         simulationService.simulateRoundRobinAsync(numRounds);
         return "redirect:/eloRanking";
     }
@@ -71,6 +71,9 @@ public class SimulationController {
         List<String> trainableAis = new ArrayList<>();
         trainableAis.add(PlayerType.NEURAL_NET_AI.name());
         trainableAis.add(PlayerType.NEURAL_NET_2_LAYERS_AI.name());
+        trainableAis.add(PlayerType.NEURAL_NET_HEURISTIC_AI.name());
+        trainableAis.add(PlayerType.NEURAL_NET_2_LAYER_HEURISTIC_AI.name());
+
 
         model.addAttribute("trainableAis", trainableAis);
 

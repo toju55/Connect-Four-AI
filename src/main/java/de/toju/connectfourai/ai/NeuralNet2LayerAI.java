@@ -16,10 +16,10 @@ import java.util.Random;
 public class NeuralNet2LayerAI implements TrainableAIPlayer {
 
     private final int inputSize = 6 * 7;
-    private final int hidden1Size = 64;
-    private final int hidden2Size = 32;
+    private final int hidden1Size = 128;
+    private final int hidden2Size = 64;
     private final int outputSize = 7;
-    private final double learningRate = 0.005;
+    private final double learningRate = 0.015;
 
     private final double[][] weightsInputHidden1;
     private final double[][] weightsHidden1Hidden2;
