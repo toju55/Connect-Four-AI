@@ -29,8 +29,6 @@ public class NeuralNetAI implements TrainableAIPlayer {
     private final double[][] weightsInputHidden;
     private final double[][] weightsHiddenOutput;
 
-    private final String saveFilePath = "neuralnetai.weights";
-
     private final Random random = new Random();
 
     public NeuralNetAI() {
@@ -169,7 +167,7 @@ public class NeuralNetAI implements TrainableAIPlayer {
      * Save weights to disk
      */
     private void saveWeights() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(saveFilePath))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getWeightsFileName()))) {
             out.writeObject(weightsInputHidden);
             out.writeObject(weightsHiddenOutput);
         } catch (IOException e) {
@@ -181,7 +179,7 @@ public class NeuralNetAI implements TrainableAIPlayer {
      * Load weights from disk
      */
     private void loadWeights() {
-        File f = new File(saveFilePath);
+        File f = new File(getWeightsFileName());
         if (!f.exists()) return;
 
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {

@@ -27,8 +27,6 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
 
     private final Random random = new Random();
 
-    private final String saveFilePath = "neuralnet2layerai.weights";
-
     public NeuralNet2LayerAI() {
         weightsInputHidden1 = new double[inputSize][hidden1Size];
         weightsHidden1Hidden2 = new double[hidden1Size][hidden2Size];
@@ -198,7 +196,7 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
     }
 
     private void saveWeights() {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(saveFilePath))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getWeightsFileName()))) {
             out.writeObject(weightsInputHidden1);
             out.writeObject(weightsHidden1Hidden2);
             out.writeObject(weightsHidden2Output);
@@ -208,7 +206,7 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
     }
 
     private void loadWeights() {
-        File f = new File(saveFilePath);
+        File f = new File(getWeightsFileName());
         if (!f.exists()) return;
 
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(f))) {

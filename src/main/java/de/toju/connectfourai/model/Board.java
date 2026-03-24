@@ -220,6 +220,22 @@ public class Board {
         return flat;
     }
 
+    public static Board fromFlatArray(int[] flatBoard) {
+        if (flatBoard.length != ROWS * COLS)
+            throw new IllegalArgumentException("Flat board must have length " + (ROWS * COLS));
+
+        Board board = new Board();
+        for (int r = 0; r < ROWS; r++) {
+            for (int c = 0; c < COLS; c++) {
+                int value = flatBoard[r * COLS + c];
+                if (value == 1) board.grid[r][c] = Player.PLAYER1;
+                else if (value == 2) board.grid[r][c] = Player.PLAYER2;
+                else board.grid[r][c] = null;
+            }
+        }
+        return board;
+    }
+
     public List<Integer> getValidColumns() {
         List<Integer> valid = new ArrayList<>();
         for (int c = 0; c < 7; c++) {

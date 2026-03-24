@@ -42,17 +42,26 @@ public class SimulationController {
 
     @GetMapping("/simulateRandom")
     public String simulateRandom(@RequestParam(defaultValue = "100") int numMatches, Model model) {
-        SimulationResult simulationResult = simulationService.simulateRandomMatches(numMatches);
-        model.addAttribute("simulationResult", simulationResult);
-        model.addAttribute("ais", Arrays.stream(PlayerType.values()).filter(pt -> !pt.isHuman()).map(Enum::name).toList());
-        return "eloRanking";
+        simulationService.simulateRandomMatchesAsync(numMatches);
+        return "redirect:/eloRanking";
     }
 
     @GetMapping("/simulateRoundRobin")
     public String simulateRoundRobin(@RequestParam(defaultValue = "1") int numRounds, Model model) {
-        SimulationResult simulationResult = simulationService.simulateRoundRobin(numRounds);
-        model.addAttribute("simulationResult", simulationResult);
-        model.addAttribute("ais", Arrays.stream(PlayerType.values()).filter(pt -> !pt.isHuman()).map(Enum::name).toList());
+        simulationService.simulateRoundRobinAsync(numRounds);
+        return "redirect:/eloRanking";
+    }
+
+    @GetMapping("/eloRanking")
+    public String tournamentStatus(Model model) {
+        model.addAttribute("running", simulationService.isSimulationRunning());
+
+        SimulationResult simulationResult = simulationService.getLastSimulationResult();
+        if (simulationResult != null) {
+            model.addAttribute("simulationResult", simulationResult);
+            model.addAttribute("ais", Arrays.stream(PlayerType.values()).filter(pt -> !pt.isHuman()).map(Enum::name).toList());
+        }
+
         return "eloRanking";
     }
 

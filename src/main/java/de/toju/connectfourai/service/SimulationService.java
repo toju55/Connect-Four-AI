@@ -9,7 +9,9 @@ import de.toju.connectfourai.ai.MinimaxAI;
 import de.toju.connectfourai.ai.MinimaxHeuristicAI;
 import de.toju.connectfourai.ai.MonteCarloAI;
 import de.toju.connectfourai.ai.NeuralNet2LayerAI;
+import de.toju.connectfourai.ai.NeuralNet2LayerHeuristicAI;
 import de.toju.connectfourai.ai.NeuralNetAI;
+import de.toju.connectfourai.ai.NeuralNetHeuristicAI;
 import de.toju.connectfourai.ai.RandomAI;
 import de.toju.connectfourai.ai.TrainableAIPlayer;
 import de.toju.connectfourai.ai.WeightedHeuristicAI;
@@ -21,6 +23,7 @@ import de.toju.connectfourai.model.PlayerType;
 import de.toju.connectfourai.model.SimulationResult;
 import de.toju.connectfourai.persistence.GameEntity;
 import de.toju.connectfourai.persistence.GameEntityRepository;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -37,7 +40,11 @@ public class SimulationService {
     private final Random random = new Random();
 
 
+    @Getter
     private volatile boolean simulationRunning = false;
+
+    @Getter
+    private volatile SimulationResult lastSimulationResult;
 
     private GameEntityRepository gameEntityRepository;
 
@@ -110,6 +117,20 @@ public class SimulationService {
         return results;
     }
 
+    @Async
+    public CompletableFuture<Void> simulateRandomMatchesAsync(int numGamesPerMatch) {
+        simulationRunning = true;
+
+        try {
+            // Ergebnisse persistent im Service halten
+            lastSimulationResult = simulateRandomMatches(numGamesPerMatch);
+        } finally {
+            simulationRunning = false;
+        }
+
+        return CompletableFuture.completedFuture(null);
+    }
+
     /**
      * Simulate 'numGames' random matches between all registered AIs and return ELO ranking.
      */
@@ -140,6 +161,20 @@ public class SimulationService {
         rankings.sort(Comparator.comparingInt(AIRanking::getElo).reversed());
 
         return new SimulationResult(rankings, matchStats);
+    }
+
+    @Async
+    public CompletableFuture<Void> simulateRoundRobinAsync(int numRounds) {
+        simulationRunning = true;
+
+        try {
+            // Ergebnisse persistent im Service halten
+            lastSimulationResult = simulateRoundRobin(numRounds);
+        } finally {
+            simulationRunning = false;
+        }
+
+        return CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -219,10 +254,6 @@ public class SimulationService {
         return CompletableFuture.completedFuture(null);
     }
 
-    public boolean isSimulationRunning() {
-        return simulationRunning;
-    }
-
     private void playTournamentGame(PlayerType p1, PlayerType p2, Map<String, Map<String, MatchStats>> matchStats, Map<PlayerType, AIRanking> rankingMap) {
 
         Map<String, Integer> result = simulateGames(p1, p2, 1); // 1 game per random match
@@ -282,7 +313,9 @@ public class SimulationService {
                 case MINIMAX_HEURISTIC_AI -> aiMap.put(ai, new MinimaxHeuristicAI());
                 case MONTE_CARLO_AI -> aiMap.put(ai, new MonteCarloAI());
                 case NEURAL_NET_2_LAYERS_AI -> aiMap.put(ai, new NeuralNet2LayerAI());
+                case NEURAL_NET_2_LAYER_HEURISTIC_AI -> aiMap.put(ai, new NeuralNet2LayerHeuristicAI());
                 case NEURAL_NET_AI -> aiMap.put(ai, new NeuralNetAI());
+                case NEURAL_NET_HEURISTIC_AI -> aiMap.put(ai, new NeuralNetHeuristicAI());
                 case RANDOM_AI -> aiMap.put(ai, new RandomAI());
                 case WEIGHTED_HEURISTIC_AI -> aiMap.put(ai, new WeightedHeuristicAI());
             }
@@ -346,9 +379,9 @@ public class SimulationService {
         PlayerType currentAI =
                 (current == Player.PLAYER1) ? ai1Type : ai2Type;
 
-        if (currentAI == PlayerType.NEURAL_NET_AI
-                || currentAI == PlayerType.NEURAL_NET_2_LAYERS_AI) {
+        AIPlayer ai = aiMap.get(currentAI);
 
+        if (ai instanceof TrainableAIPlayer) {
             if (move >= 0) {
                 BoardState state = new BoardState(board.toFlatArray(current), current, move);
 
