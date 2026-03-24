@@ -171,3 +171,83 @@ select:focus {
     box-shadow: 0 0 5px rgba(25, 118, 210, 0.4);
     outline: none;
 }
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+section {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.card {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+.btn {
+    padding: 6px 12px;
+    background: #eee;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.paging {
+    display: flex;
+    justify-content: center; /* zentriert die Leiste */
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    font-family: Arial, sans-serif;
+}
+
+.paging a {
+    padding: 0.3rem 0.6rem;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.paging a:hover {
+    background-color: #0056b3;
+}
+
+.paging span {
+    margin: 0 0.5rem;
+}
+
+.board-legend-wrapper {
+    text-align: center; /* zentriert die ganze Box */
+}
+
+.board-legend {
+    display: inline-block; /* wichtig! */
+    text-align: left;      /* Inhalt links ausrichten */
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 3px 0;
+    font-weight: bold;
+}
+
+.legend-item .legend-player {
+    background: #90caf9;
+    width: 16px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.legend-player1 { color: red; }
+.legend-player2 { color: yellow; }

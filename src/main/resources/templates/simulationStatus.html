@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Simulation Status</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div th:replace="fragments/navigation :: backToHome"></div>
+
+<h1>Simulation Status</h1>
+<p id="status">Loading...</p>
+
+<script>
+    async function updateStatus() {
+        try {
+            const response = await fetch('/simulationStatus/json');
+            if (!response.ok) throw new Error('Network error');
+
+            const data = await response.json();
+            const statusElem = document.getElementById('status');
+            if (data.running) {
+                statusElem.textContent = 'Simulation is running...';
+            } else {
+                statusElem.textContent = 'Simulation is idle.';
+            }
+        } catch (err) {
+            console.error('Error fetching simulation status:', err);
+        }
+    }
+
+    // Initial fetch
+    updateStatus();
+    // Poll every 1 second
+    setInterval(updateStatus, 1000);
+</script>
+
+<br/><br/>
+
+<form th:action="@{/}" method="get">
+    <button type="submit">Back</button>
+</form>
+
+
+</body>
+</html>

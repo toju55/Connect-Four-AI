@@ -5,27 +5,79 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Connect Four AI</h1>
 
-<!-- Start single game -->
-<h2>Start a Single Game</h2>
-<form th:action="@{/selectPlayers}" method="get">
-    <button type="submit">Start Game</button>
-</form>
+<h1>🧠 Connect Four AI Lab</h1>
 
-<!-- Simulate games between chosen AIs -->
-<h2>Simulate Games Between AIs</h2>
-<form th:action="@{/simulate}" method="get">
-    <button type="submit">Simulate</button>
-</form>
+<div class="container">
 
-<!-- Random ELO Tournament -->
-<h2>Random AI ELO Tournament</h2>
-<form th:action="@{/simulateElo}" method="get">
-    <label for="numMatches">Number of random matches:</label>
-    <input type="number" id="numMatches" name="numMatches" value="100" min="1" />
-    <button type="submit">Run Tournament</button>
-</form>
+    <!-- PLAY -->
+    <section>
+        <h2>🎮 Play</h2>
+        <form th:action="@{/selectPlayers}" method="get">
+            <button type="submit">Start Single Game</button>
+        </form>
+    </section>
+
+    <!-- SIMULATIONS -->
+    <section>
+        <h2>🤖 Simulations</h2>
+
+        <div class="card">
+            <h3>Custom Simulation</h3>
+            <form th:action="@{/simulate}" method="get">
+                <button type="submit">Simulate AI vs AI</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Random Tournament</h3>
+            <form th:action="@{/simulateRandom}" method="get">
+                <label>Matches:</label>
+                <input type="number" name="numMatches" value="100" min="1" />
+                <button type="submit">Run</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Round Robin</h3>
+            <form th:action="@{/simulateRoundRobin}" method="get">
+                <label>Rounds:</label>
+                <input type="number" name="numRounds" value="1" min="1" />
+                <button type="submit">Run</button>
+            </form>
+        </div>
+
+    </section>
+
+    <!-- TRAINING -->
+    <section>
+        <h2>🧠 Training</h2>
+        <form th:action="@{/train}" method="get">
+            <button type="submit">Train AIs</button>
+        </form>
+    </section>
+
+    <!-- ANALYSIS -->
+    <section>
+        <h2>📊 Analysis</h2>
+
+        <div class="card">
+            <h3>Replays</h3>
+            <form th:action="@{/replay}" method="get">
+                <button type="submit">View Replays</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>Simulation Status</h3>
+            <form th:action="@{/simulationStatus}" method="get">
+                <button type="submit">View Status</button>
+            </form>
+        </div>
+
+    </section>
+
+</div>
 
 </body>
 </html>

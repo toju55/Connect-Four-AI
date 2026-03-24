@@ -7,6 +7,8 @@
 
 <body>
 
+<div th:replace="fragments/navigation :: backToHome"></div>
+
 <h1>Connect Four</h1>
 
 <!-- Current player -->
@@ -26,22 +28,7 @@
     <h2>Draw!</h2>
 </div>
 
-<!-- Board -->
-<div class="board" th:classappend="${gameOver} ? 'disabled' : ''">
-    <table>
-        <tr th:each="row : ${board.grid}">
-            <td th:each="cell, colStat : ${row}"
-                th:onclick="${currentPlayerType.name() == 'HUMAN' && !gameOver}
-                    ? 'window.location.href=\'/move?col=' + ${colStat.index} + '\''
-                    : null">
-
-                <div class="cell"
-                     th:classappend="${cell != null} ? ${cell.name().toLowerCase()} : ''">
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
+<div th:replace="fragments/board :: boardFragment(${board}, ${player1Type.name()}, ${player2Type.name()}, ${currentPlayerType.name()}, ${gameOver})"></div>
 
 <br/>
 

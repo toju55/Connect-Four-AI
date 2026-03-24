@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Replay Viewer</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div th:replace="fragments/navigation :: backToHome"></div>
+
+<h1>Replay Viewer</h1>
+<p th:text="'Game: ' + ${game.ai1} + ' vs ' + ${game.ai2} + ', Winner: ' +
+    (${game.winner == 0} ? 'Draw' : (${game.winner == 1 ? game.ai1 : game.ai2}))"></p>
+
+<!-- Include board fragment -->
+<div th:replace="fragments/board :: boardFragment(${replayBoard}, ${game.ai1.name()}, ${game.ai2.name()}, ${game.ai1.name()}, true)"></div>
+
+<!-- Controls -->
+<div>
+    <button id="prevBtn">Previous</button>
+    <span>Move <span id="moveIndex" th:text="${currentMoveIndex + 1}"></span> / <span id="moveTotal" th:text="${moves.size()}"></span></span>
+    <button id="nextBtn">Next</button>
+</div>
+
+<a th:href="@{/replay}">Back to Replay List</a>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let moves = /*[[${moves}]]*/ [];
+    let board = /*[[${replayBoard.grid}]]*/ [];
+    let currentIndex = /*[[${currentMoveIndex}]]*/ 0;
+
+    function applyMove(moveIndex) {
+        // reset board
+        for (let r = 0; r < board.length; r++) {
+            for (let c = 0; c < board[r].length; c++) {
+                board[r][c] = null;
+                document.querySelectorAll('.board tr')[r].children[c].querySelector('.cell').className = 'cell';
+            }
+        }
+
+        let colHeights = Array(board[0].length).fill(0);
+        for (let i = 0; i <= moveIndex; i++) {
+            let col = moves[i] - 1; // 1-based to 0-based
+            let playerClass = i % 2 === 0 ? 'player1' : 'player2';
+            let row = board.length - 1 - colHeights[col];
+            board[row][col] = playerClass;
+            document.querySelectorAll('.board tr')[row].children[col].querySelector('.cell').classList.add(playerClass);
+            colHeights[col]++;
+        }
+
+        document.getElementById('moveIndex').innerText = moveIndex + 1;
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        if (currentIndex > 0) currentIndex--;
+        applyMove(currentIndex);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        if (currentIndex < moves.length - 1) currentIndex++;
+        applyMove(currentIndex);
+    });
+
+    // initialize
+    applyMove(currentIndex);
+    /*]]>*/
+</script>
+</body>
+</html>

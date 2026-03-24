@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -18,24 +19,25 @@ import java.util.Random;
  * Improves slightly after each game by training on the last game result.
  */
 @Component
-public class NeuralNetAI implements AIPlayer {
+public class NeuralNetAI implements TrainableAIPlayer {
 
     private final int inputSize = 6 * 7; // board flattened
     private final int hiddenSize = 64;   // arbitrary hidden layer size
     private final int outputSize = 7;    // one per column
-    private final double learningRate = 0.1;
+    private final double learningRate = 0.005;
 
     private final double[][] weightsInputHidden;
     private final double[][] weightsHiddenOutput;
 
     private final String saveFilePath = "neuralnetai.weights";
 
+    private final Random random = new Random();
+
     public NeuralNetAI() {
         // Initialize weights randomly between -1 and 1
         weightsInputHidden = new double[inputSize][hiddenSize];
         weightsHiddenOutput = new double[hiddenSize][outputSize];
 
-        Random random = new Random();
         for (int i = 0; i < inputSize; i++)
             for (int j = 0; j < hiddenSize; j++)
                 weightsInputHidden[i][j] = random.nextDouble() * 2 - 1;
@@ -63,13 +65,29 @@ public class NeuralNetAI implements AIPlayer {
             hidden[j] = Math.tanh(sum); // activation
         }
 
+        // Debug
+        for (int i = 0; i < hiddenSize; i++) {
+            for (int j = 0; j < outputSize; j++) {
+                if (Double.isNaN(weightsHiddenOutput[i][j])) {
+                    System.err.println("NaN in weightsHiddenOutput!");
+                }
+            }
+        }
+
         // Hidden -> output
         for (int j = 0; j < outputSize; j++) {
             double sum = 0;
             for (int i = 0; i < hiddenSize; i++) {
                 sum += hidden[i] * weightsHiddenOutput[i][j];
             }
-            output[j] = sum; // raw score
+            output[j] = Math.max(-10, Math.min(10, sum));
+        }
+
+        // Debug
+        for (int c = 0; c < 7; c++) {
+            if (Double.isNaN(output[c])) {
+                System.err.println("NaN detected in output at column " + c);
+            }
         }
 
         // Choose the move with the highest score among available columns
@@ -82,26 +100,38 @@ public class NeuralNetAI implements AIPlayer {
             }
         }
 
-        return bestMove;
+        // Debug
+        if (bestMove == -1) {
+            System.err.println("No valid move found! Outputs:");
+            for (int c = 0; c < 7; c++) {
+                System.err.println("c=" + c + " output=" + output[c] + " full=" + board.isColumnFull(c));
+            }
+        }
+
+        // Fallback
+        if (bestMove == -1) {
+            List<Integer> validMoves = board.getValidColumns();
+            bestMove = validMoves.get(random.nextInt(validMoves.size()));
+        }
+
+        double epsilon = 0.30;
+        int chosenMove;
+        if (random.nextDouble() < epsilon) {
+            // explore
+            List<Integer> validMoves = board.getValidColumns();
+            chosenMove = validMoves.get(random.nextInt(validMoves.size()));
+        } else {
+            // exploit
+            chosenMove = bestMove;
+        }
+
+        return chosenMove;
     }
 
-    /**
-     * Train the network a bit after a game.
-     * Very simple: reinforce the moves that led to a win.
-     * @param board last board state
-     * @param move the move made
-     * @param player the player who made the move
-     * @param result 1 win, 0.5 draw, 0 loss
-     */
-    /**
-     * Train the network a bit after a game.
-     * Simple reward-based reinforcement: only reinforce moves that led to a win.
-     * @param board last board state
-     * @param move the move made
-     * @param player the player who made the move
-     * @param result 1 win, 0.5 draw, 0 loss
-     */
+    @Override
     public void train(int[] board, int move, Player player, double result) {
+        if (move < 0 || move >= outputSize) return;
+
         double[] hidden = new double[hiddenSize];
 
         // Forward pass: input -> hidden
@@ -113,13 +143,25 @@ public class NeuralNetAI implements AIPlayer {
             hidden[j] = Math.tanh(sum);
         }
 
-        // Output -> only used for move selection, not for weight update here
-        // Reinforce the chosen move using reward
-        for (int i = 0; i < hiddenSize; i++) {
-            weightsHiddenOutput[i][move] += learningRate * result * hidden[i];
+        // Hidden -> output (nur für Fehlerberechnung)
+        double[] output = new double[outputSize];
+        for (int j = 0; j < outputSize; j++) {
+            double sum = 0;
+            for (int i = 0; i < hiddenSize; i++) {
+                sum += hidden[i] * weightsHiddenOutput[i][j];
+            }
+            output[j] = sum;
         }
 
-        // Persist weights after training
+        // Fehler nur für den gespielten Move
+        double error = result - output[move];
+
+        // Update Hidden -> Output
+        for (int i = 0; i < hiddenSize; i++) {
+            weightsHiddenOutput[i][move] += learningRate * error * hidden[i];
+            weightsHiddenOutput[i][move] = Math.max(-5, Math.min(5, weightsHiddenOutput[i][move]));
+        }
+
         saveWeights();
     }
 

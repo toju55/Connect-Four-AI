@@ -5,6 +5,8 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
+<div th:replace="fragments/navigation :: backToHome"></div>
+
 <h1>AI ELO Ranking</h1>
 
 <table class="simulation-table">
@@ -13,16 +15,16 @@
         <th>AI</th>
         <th>ELO</th>
         <th>Wins</th>
-        <th>Losses</th>
         <th>Draws</th>
+        <th>Losses</th>
     </tr>
     <tr th:each="r, stat : ${simulationResult.rankings}">
         <td th:text="${stat.index + 1}"></td>
         <td th:text="${r.ai}"></td>
         <td th:text="${r.elo}"></td>
         <td th:text="${r.wins}"></td>
-        <td th:text="${r.losses}"></td>
         <td th:text="${r.draws}"></td>
+        <td th:text="${r.losses}"></td>
     </tr>
 </table>
 
@@ -38,8 +40,8 @@
         <td th:each="colAI : ${ais}">
             <span th:text="${rowAI == colAI ? '-' :
                            simulationResult.matchStats.get(rowAI).get(colAI).getWins() + '-' +
-                           simulationResult.matchStats.get(rowAI).get(colAI).getLosses() + '-' +
-                           simulationResult.matchStats.get(rowAI).get(colAI).getDraws()}">
+                           simulationResult.matchStats.get(rowAI).get(colAI).getDraws() + '-' +
+                           simulationResult.matchStats.get(rowAI).get(colAI).getLosses()}">
             </span>
         </td>
     </tr>

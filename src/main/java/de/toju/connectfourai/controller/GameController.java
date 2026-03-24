@@ -8,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -18,7 +16,7 @@ public class GameController {
     private final GameService gameService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index() {
         return "index";
     }
 
@@ -39,6 +37,8 @@ public class GameController {
         model.addAttribute("board", gameService.getBoard());
         model.addAttribute("currentPlayer", gameService.getCurrentPlayer());
         model.addAttribute("currentPlayerType", gameService.getCurrentPlayerType());
+        model.addAttribute("player1Type", gameService.getPlayer1Type());
+        model.addAttribute("player2Type", gameService.getPlayer2Type());
         model.addAttribute("winner", gameService.getWinner());
         model.addAttribute("winnerType",  gameService.getWinnerType());
         model.addAttribute("boardFull", gameService.getBoard().isFull());

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Train AIs</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div th:replace="fragments/navigation :: backToHome"></div>
+
+<h1>Train AIs</h1>
+
+<!-- Train AI -->
+<h2>Train AI</h2>
+<form th:action="@{/train-async}" method="get">
+    <label>Trained AI:
+        <select name="ai">
+            <option th:each="type : ${trainableAis}"
+                    th:value="${type}"
+                    th:text="${type}">
+            </option>
+        </select>
+    </label>
+
+    <br/><br/>
+
+    <label for="numRoundsAsync">Number of rounds:</label>
+    <input type="number" id="numRoundsAsync" name="numRounds" value="1000" min="1" />
+
+    <br/><br/>
+
+    <button type="submit">Start Game</button>
+
+</form>

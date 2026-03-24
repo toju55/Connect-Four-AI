@@ -2,6 +2,9 @@ package de.toju.connectfourai.model;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 public class Board {
 
@@ -215,6 +218,16 @@ public class Board {
             }
         }
         return flat;
+    }
+
+    public List<Integer> getValidColumns() {
+        List<Integer> valid = new ArrayList<>();
+        for (int c = 0; c < 7; c++) {
+            if (!isColumnFull(c)) {
+                valid.add(c);
+            }
+        }
+        return valid;
     }
 
     public void printBoard() {

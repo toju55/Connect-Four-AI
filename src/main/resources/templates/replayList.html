@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Replay List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div th:replace="fragments/navigation :: backToHome"></div>
+
+<h1>Saved Replays</h1>
+
+<!-- Paging Navigation -->
+<div class="paging">
+    <a th:if="${currentPage > 0}"
+       th:href="@{/replay(page=0, size=${pageSize})}">First</a>
+
+    <a th:if="${currentPage > 0}"
+       th:href="@{/replay(page=${currentPage - 1}, size=${pageSize})}">Previous</a>
+
+    <span>Page <span th:text="${currentPage + 1}"></span> of <span th:text="${totalPages}"></span></span>
+
+    <a th:if="${currentPage + 1 < totalPages}"
+       th:href="@{/replay(page=${currentPage + 1}, size=${pageSize})}">Next</a>
+
+    <a th:if="${currentPage + 1 < totalPages}"
+       th:href="@{/replay(page=${totalPages - 1}, size=${pageSize})}">Last</a>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Player 1</th>
+        <th>Player 2</th>
+        <th>Winner</th>
+        <th>Date</th>
+        <th>Replay</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="game : ${games}">
+        <td th:text="${game.id}"></td>
+        <td th:text="${game.ai1}"></td>
+        <td th:text="${game.ai2}"></td>
+        <td th:text="${game.winner == 0 ? 'Draw' : (game.winner == 1 ? game.ai1 : game.ai2)}"></td>
+        <td th:text="${game.createdAt.format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd HH:mm'))}"></td>
+        <td><a th:href="@{/replay/{id}(id=${game.id})}">View</a></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -73,6 +73,7 @@ public class GameService {
             case MINIMAX_AI -> minimaxAI;
             case MINIMAX_HEURISTIC_AI ->  minimaxHeuristicAI;
             case MONTE_CARLO_AI -> monteCarloAI;
+            case NEURAL_NET_2_LAYERS_AI ->  neuralNet2LayerAI;
             case NEURAL_NET_AI -> neuralNetAI;
             case RANDOM_AI -> randomAI;
             case WEIGHTED_HEURISTIC_AI -> weightedHeuristicAI;

@@ -1,0 +1,34 @@
+<div th:fragment="boardFragment(board, player1Name, player2Name, currentPlayerName, gameOver)">
+
+    <!-- Board Legend -->
+    <div class="board-legend-wrapper">
+        <div class="board-legend">
+            <div class="legend-item">
+                <span class="legend-player legend-player1">●</span>
+                <span th:text="${player1Name}">Player 1</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-player legend-player2">●</span>
+                <span th:text="${player2Name}">Player 2</span>
+            </div>
+        </div>
+    </div>
+
+    <br/><br/>
+
+    <!-- Board -->
+    <div class="board" th:classappend="${gameOver} ? 'disabled' : ''">
+        <table>
+            <tr th:each="row : ${board.grid}">
+                <td th:each="cell, colStat : ${row}"
+                    th:onclick="${currentPlayerName == 'HUMAN' && !gameOver}
+                        ? 'window.location.href=\'/move?col=' + ${colStat.index} + '\''
+                        : null">
+                    <div class="cell"
+                         th:classappend="${cell != null} ? ${cell.name().toLowerCase()} : ''">
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

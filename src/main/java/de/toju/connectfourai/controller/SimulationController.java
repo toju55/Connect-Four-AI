@@ -8,7 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -38,10 +40,54 @@ public class SimulationController {
         return "simulationResults";
     }
 
-    @GetMapping("/simulateElo")
-    public String simulateElo(@RequestParam(defaultValue = "100") int numMatches, Model model) {
+    @GetMapping("/simulateRandom")
+    public String simulateRandom(@RequestParam(defaultValue = "100") int numMatches, Model model) {
         SimulationResult simulationResult = simulationService.simulateRandomMatches(numMatches);
         model.addAttribute("simulationResult", simulationResult);
         model.addAttribute("ais", Arrays.stream(PlayerType.values()).filter(pt -> !pt.isHuman()).map(Enum::name).toList());
         return "eloRanking";
-    }}
+    }
+
+    @GetMapping("/simulateRoundRobin")
+    public String simulateRoundRobin(@RequestParam(defaultValue = "1") int numRounds, Model model) {
+        SimulationResult simulationResult = simulationService.simulateRoundRobin(numRounds);
+        model.addAttribute("simulationResult", simulationResult);
+        model.addAttribute("ais", Arrays.stream(PlayerType.values()).filter(pt -> !pt.isHuman()).map(Enum::name).toList());
+        return "eloRanking";
+    }
+
+    @GetMapping("/train")
+    public String train(Model model) {
+
+        List<String> trainableAis = new ArrayList<>();
+        trainableAis.add(PlayerType.NEURAL_NET_AI.name());
+        trainableAis.add(PlayerType.NEURAL_NET_2_LAYERS_AI.name());
+
+        model.addAttribute("trainableAis", trainableAis);
+
+        return "train";
+
+    }
+
+    @GetMapping("/train-async")
+    public String trainAsync(@RequestParam(defaultValue = "1000") int numRounds, @RequestParam String ai) {
+
+        simulationService.trainAiAsync(PlayerType.valueOf(ai), numRounds);
+
+        return "redirect:/simulationStatus";
+    }
+
+    @GetMapping("/simulationStatus")
+    public String simulationStatus(Model model) {
+
+        model.addAttribute("running", simulationService.isSimulationRunning());
+
+        return "simulationStatus";
+    }
+
+    @GetMapping("/simulationStatus/json")
+    @ResponseBody
+    public Map<String, Boolean> simulationStatusJson() {
+        return Map.of("running", simulationService.isSimulationRunning());
+    }
+}
