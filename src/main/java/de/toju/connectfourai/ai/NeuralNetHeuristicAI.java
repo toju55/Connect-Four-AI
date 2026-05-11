@@ -17,9 +17,7 @@ public class NeuralNetHeuristicAI extends NeuralNetAI {
     }
 
     private double computeHeuristicReward(int[] board, Player player, double result) {
-        // Beispiel: direkter Gewinn bekommt maximalen Reward
-        if (result == 1.0 && player == Player.PLAYER1) return 1.0;
-        if (result == 1.0 && player == Player.PLAYER2) return 1.0;
+        if (result == 1.0) return 1.0;
         if (result == 0.0) return 0.0; // draw
 
         Board realBoard = Board.fromFlatArray(board);

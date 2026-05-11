@@ -141,14 +141,14 @@ public class NeuralNetAI implements TrainableAIPlayer {
             hidden[j] = Math.tanh(sum);
         }
 
-        // Hidden -> output (nur für Fehlerberechnung)
+        // Hidden -> output (mit Clipping wie in chooseMove)
         double[] output = new double[outputSize];
         for (int j = 0; j < outputSize; j++) {
             double sum = 0;
             for (int i = 0; i < hiddenSize; i++) {
                 sum += hidden[i] * weightsHiddenOutput[i][j];
             }
-            output[j] = sum;
+            output[j] = Math.max(-10, Math.min(10, sum));
         }
 
         // Fehler nur für den gespielten Move
@@ -160,12 +160,25 @@ public class NeuralNetAI implements TrainableAIPlayer {
             weightsHiddenOutput[i][move] = Math.max(-5, Math.min(5, weightsHiddenOutput[i][move]));
         }
 
+        // Backprop Fehler zu Hidden-Layer
+        double[] hiddenErrors = new double[hiddenSize];
+        for (int i = 0; i < hiddenSize; i++) {
+            hiddenErrors[i] = error * weightsHiddenOutput[i][move] * (1 - hidden[i] * hidden[i]);
+        }
+
+        // Update Input -> Hidden
+        for (int i = 0; i < inputSize; i++) {
+            for (int j = 0; j < hiddenSize; j++) {
+                weightsInputHidden[i][j] += learningRate * hiddenErrors[j] * board[i];
+            }
+        }
+    }
+
+    @Override
+    public void save() {
         saveWeights();
     }
 
-    /**
-     * Save weights to disk
-     */
     private void saveWeights() {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getWeightsFileName()))) {
             out.writeObject(weightsInputHidden);

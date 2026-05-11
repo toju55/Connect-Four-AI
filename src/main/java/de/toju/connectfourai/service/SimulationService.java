@@ -114,6 +114,10 @@ public class SimulationService {
             trainNeuralNetGeneric(p2Moves, winner, Player.PLAYER2, aiMap.get(ai2Type));
         }
 
+        // Save weights once per batch
+        saveIfTrainable(aiMap.get(ai1Type));
+        saveIfTrainable(aiMap.get(ai2Type));
+
         return results;
     }
 
@@ -247,10 +251,18 @@ public class SimulationService {
                         nextLogAt += 10000;     // 10000,20000,...
                     }
                 }            }
+            // Save trained AI weights after session
+            saveIfTrainable(aiMap.get(ai));
         } finally {
             simulationRunning = false;
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    private void saveIfTrainable(AIPlayer ai) {
+        if (ai instanceof TrainableAIPlayer trainable) {
+            trainable.save();
+        }
     }
 
     private void playTournamentGame(PlayerType p1, PlayerType p2, Map<String, Map<String, MatchStats>> matchStats, Map<PlayerType, AIRanking> rankingMap) {
@@ -297,8 +309,8 @@ public class SimulationService {
         double newElo1 = r1.getElo() + k * (s1 - e1);
         double newElo2 = r2.getElo() + k * (s2 - e2);
 
-        int roundedElo1 = (int) Math.floor(newElo1);
-        int roundedElo2 = (int) Math.ceil(newElo2);
+        int roundedElo1 = (int) Math.round(newElo1);
+        int roundedElo2 = (int) Math.round(newElo2);
 
         r1.setElo(roundedElo1);
         r2.setElo(roundedElo2);

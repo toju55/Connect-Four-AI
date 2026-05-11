@@ -34,13 +34,13 @@ public class WeightedHeuristicAI implements AIPlayer {
     /** Static evaluation so HybridAI can reuse */
     public static int evaluateStatic(Board board, Player player) {
         int score = 0;
-        score += WIN_WEIGHT * board.countPotentialWins(player);
+        score += WIN_WEIGHT * board.countRowsOf(player, 4);
         score += THREE_WEIGHT * board.countRowsOf(player, 3);
         score += TWO_WEIGHT * board.countRowsOf(player, 2);
         score += CENTER_WEIGHT * board.countCenterControl(player);
 
         Player opponent = player.opposite();
-        score -= WIN_WEIGHT * board.countPotentialWins(opponent);
+        score -= WIN_WEIGHT * board.countRowsOf(opponent, 4);
         score -= THREE_WEIGHT * board.countRowsOf(opponent, 3);
         score -= TWO_WEIGHT * board.countRowsOf(opponent, 2);
         score -= CENTER_WEIGHT * board.countCenterControl(opponent);

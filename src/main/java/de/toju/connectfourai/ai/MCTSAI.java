@@ -53,7 +53,10 @@ public class MCTSAI implements AIPlayer {
         return root.children.stream()
                 .max(Comparator.comparingInt(n -> n.visits))
                 .map(n -> n.move)
-                .orElse(0);
+                .orElseGet(() -> {
+                    List<Integer> valid = board.getValidColumns();
+                    return valid.isEmpty() ? 0 : valid.get(random.nextInt(valid.size()));
+                });
     }
 
     private MCTSNode select(MCTSNode node) {

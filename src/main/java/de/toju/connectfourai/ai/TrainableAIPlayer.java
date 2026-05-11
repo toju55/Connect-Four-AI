@@ -10,4 +10,6 @@ public interface TrainableAIPlayer extends AIPlayer {
 
     void train(int[] board, int move, Player player, double reward);
 
+    void save();
+
 }

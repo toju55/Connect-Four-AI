@@ -75,9 +75,13 @@ public class MinimaxAI implements AIPlayer {
         return moves;
     }
 
-    // Simple heuristic evaluation
     private int evaluate(Board board, Player player) {
-        // For now: neutral evaluation
-        return 0;
+        Player opponent = player.opposite();
+        int score = 0;
+        score += 100 * board.countRowsOf(player, 3);
+        score -= 100 * board.countRowsOf(opponent, 3);
+        score += 10 * board.countRowsOf(player, 2);
+        score -= 10 * board.countRowsOf(opponent, 2);
+        return score;
     }
 }

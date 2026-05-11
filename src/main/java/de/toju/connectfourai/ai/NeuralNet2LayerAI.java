@@ -191,7 +191,10 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
                 weightsInputHidden1[k][j] += learningRate * hidden1Errors[j] * board[k];
             }
         }
+    }
 
+    @Override
+    public void save() {
         saveWeights();
     }
 
