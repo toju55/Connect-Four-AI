@@ -275,7 +275,8 @@ public class SimulationService {
         AIRanking r1 = rankingMap.get(p1);
         AIRanking r2 = rankingMap.get(p2);
 
-        int s1, s2;
+        double s1;
+        double s2;
         if (result.get("AI1Wins") == 1) {
             s1 = 1;
             s2 = 0;
@@ -287,8 +288,8 @@ public class SimulationService {
             matchStats1.recordLoss();
             matchStats2.recordWin();
         } else { // Draw
-            s1 = 0;
-            s2 = 0;
+            s1 = 0.5;
+            s2 = 0.5;
             matchStats1.recordDraw();
             matchStats2.recordDraw();
         }
@@ -300,7 +301,7 @@ public class SimulationService {
         updateElo(r1, r2, s1, s2);
     }
 
-    private void updateElo(AIRanking r1, AIRanking r2, int s1, int s2) {
+    private void updateElo(AIRanking r1, AIRanking r2, double s1, double s2) {
         double k = 32.0;
 
         double e1 = 1.0 / (1 + Math.pow(10, (r2.getElo() - r1.getElo()) / 400.0));
@@ -360,29 +361,35 @@ public class SimulationService {
     }
 
     private void trainNeuralNetGeneric(List<BoardState> moves, Player winner, Player player, AIPlayer ai) {
-        // Determine reward: 1 for win, 0 for draw, -1 for loss
         double reward;
         if (winner == player) reward = 1.0;
         else if (winner == null) reward = 0;
         else reward = -1.0;
 
+        int totalPlayerMoves = 0;
         for (BoardState state : moves) {
-            // Only train on moves made by the current player
+            if (state.player == player) totalPlayerMoves++;
+        }
+
+        int moveIndex = 0;
+        for (BoardState state : moves) {
             if (state.player != player) continue;
 
             int move = state.lastMove;
             if (move < 0 || move >= 7) {
-                // Invalid move, skip training and print debug
                 System.err.println("Skipping training for invalid move: " + move + ", player: " + player + ", AIPlayer: " + ai);
                 continue;
             }
 
-            // Call the AI-specific train method
+            int remainingMoves = totalPlayerMoves - moveIndex - 1;
+            double discountedReward = reward * Math.pow(0.9, remainingMoves);
+
             if (ai instanceof TrainableAIPlayer trainable) {
-                trainable.train(state.flatBoard, move, state.player, reward);
+                trainable.train(state.flatBoard, move, state.player, discountedReward);
             } else {
                 System.err.println("Unknown AI type for training: " + ai.getClass());
             }
+            moveIndex++;
         }
     }
 

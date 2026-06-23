@@ -27,6 +27,8 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
 
     private final Random random = new Random();
 
+    private int trainingStep = 0;
+
     public NeuralNet2LayerAI() {
         weightsInputHidden1 = new double[inputSize][hidden1Size];
         weightsHidden1Hidden2 = new double[hidden1Size][hidden2Size];
@@ -103,7 +105,7 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
             }
         }
 
-        double epsilon = 0.30;
+        double epsilon = 0.05 + 0.95 * Math.exp(-trainingStep / 5000.0);
         int chosenMove;
         if (random.nextDouble() < epsilon) {
             // explore: zufälliger erlaubter Move
@@ -191,6 +193,8 @@ public class NeuralNet2LayerAI implements TrainableAIPlayer {
                 weightsInputHidden1[k][j] += learningRate * hidden1Errors[j] * board[k];
             }
         }
+
+        trainingStep++;
     }
 
     @Override

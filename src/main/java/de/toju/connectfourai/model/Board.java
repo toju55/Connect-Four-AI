@@ -229,7 +229,7 @@ public class Board {
             for (int c = 0; c < COLS; c++) {
                 int value = flatBoard[r * COLS + c];
                 if (value == 1) board.grid[r][c] = Player.PLAYER1;
-                else if (value == 2) board.grid[r][c] = Player.PLAYER2;
+                else if (value == -1 || value == 2) board.grid[r][c] = Player.PLAYER2;
                 else board.grid[r][c] = null;
             }
         }

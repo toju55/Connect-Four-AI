@@ -12,10 +12,14 @@ public class AIRanking {
             this.elo = initialElo;
         }
 
-        public void recordResult(int win, int loss) {
-            if (win == 1) wins++;
-            else if (loss == 1) losses++;
-            else draws++;
+        public void recordResult(double ownScore, double opponentScore) {
+            if (ownScore == 1.0) {
+                wins++;
+            } else if (opponentScore == 1.0) {
+                losses++;
+            } else {
+                draws++;
+            }
         }
 
         public PlayerType getAi() { return ai; }

@@ -31,6 +31,8 @@ public class NeuralNetAI implements TrainableAIPlayer {
 
     private final Random random = new Random();
 
+    private int trainingStep = 0;
+
     public NeuralNetAI() {
         // Initialize weights randomly between -1 and 1
         weightsInputHidden = new double[inputSize][hiddenSize];
@@ -112,7 +114,7 @@ public class NeuralNetAI implements TrainableAIPlayer {
             bestMove = validMoves.get(random.nextInt(validMoves.size()));
         }
 
-        double epsilon = 0.30;
+        double epsilon = 0.05 + 0.95 * Math.exp(-trainingStep / 5000.0);
         int chosenMove;
         if (random.nextDouble() < epsilon) {
             // explore
@@ -172,6 +174,8 @@ public class NeuralNetAI implements TrainableAIPlayer {
                 weightsInputHidden[i][j] += learningRate * hiddenErrors[j] * board[i];
             }
         }
+
+        trainingStep++;
     }
 
     @Override

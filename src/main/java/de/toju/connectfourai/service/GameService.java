@@ -18,9 +18,11 @@ import de.toju.connectfourai.model.Board;
 import de.toju.connectfourai.model.Player;
 import de.toju.connectfourai.model.PlayerType;
 import lombok.Getter;
+import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.stereotype.Service;
 
 @Service
+@SessionScope
 @Getter
 public class GameService {
 
